@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5315bc0e92ac6ac67f492dadc2e445174b9eea39
 # Godot-specific ignores
 .import/
 export.cfg
 export_presets.cfg
+<<<<<<< HEAD
 *.translation
+=======
+>>>>>>> 5315bc0e92ac6ac67f492dadc2e445174b9eea39
 
 # Mono-specific ignores
 .mono/
