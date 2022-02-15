@@ -14,7 +14,7 @@ export var path_length = 80
 func _ready():
 
 	for i in density:
-		var particle = preload("res://Particle.tscn").instance()
+		var particle = preload("res://scenes/sound_particle/SoundParticle.tscn").instance()
 		particle.rotation = (2 * PI * i) / density
 		particle.speed = particle_speed
 		particle.bounce_limit = bounce_limit

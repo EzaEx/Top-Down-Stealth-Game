@@ -11,8 +11,8 @@ config_version=4
 [application]
 
 config/name="2D-Top-Down-Game"
-run/main_scene="res://World.tscn"
-config/icon="res://art/icon.png"
+run/main_scene="res://scenes/_levels_rooms/world/World.tscn"
+config/icon="res://global_resources/icon.png"
 
 [display]
 

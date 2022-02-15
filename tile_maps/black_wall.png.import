@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/white_square.png-2f29d5993433c40da3960f5de86004a8.stex"
+path="res://.import/black_wall.png-22ae7c8ff5486fc479a4851f57edcd3f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/white_square.png"
-dest_files=[ "res://.import/white_square.png-2f29d5993433c40da3960f5de86004a8.stex" ]
+source_file="res://tile_maps/black_wall.png"
+dest_files=[ "res://.import/black_wall.png-22ae7c8ff5486fc479a4851f57edcd3f.stex" ]
 
 [params]
 

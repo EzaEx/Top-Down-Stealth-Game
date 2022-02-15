@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/light_shadow.png-391101b088af53c79e332cc70ce5f418.stex"
+path="res://.import/floor_tile.png-e22e75dbfb587db67a0c8da8bf8c8c9b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/light_shadow.png"
-dest_files=[ "res://.import/light_shadow.png-391101b088af53c79e332cc70ce5f418.stex" ]
+source_file="res://tile_maps/floor_tile.png"
+dest_files=[ "res://.import/floor_tile.png-e22e75dbfb587db67a0c8da8bf8c8c9b.stex" ]
 
 [params]
 

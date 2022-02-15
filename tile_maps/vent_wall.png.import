@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/light_map.png-435385d5caafb89bb7e6f0946e155e73.stex"
+path="res://.import/vent_wall.png-aa4221c5c99af16a87afd139cc5af899.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/light_map.png"
-dest_files=[ "res://.import/light_map.png-435385d5caafb89bb7e6f0946e155e73.stex" ]
+source_file="res://tile_maps/vent_wall.png"
+dest_files=[ "res://.import/vent_wall.png-aa4221c5c99af16a87afd139cc5af899.stex" ]
 
 [params]
 
