@@ -22,6 +22,7 @@ func _ready():
 			if y == 0 or x == 0 or y == height - 1 or x == width - 1:
 				$TileMap.set_cellv(map_coord, 1)
 			else:
+				$TileMap.set_cellv(map_coord, 1)
 				all_map_pos.append(map_coord)
 		
 	#draw occluders for all vent tiles
