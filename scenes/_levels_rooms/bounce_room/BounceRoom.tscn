@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scenes/base_map/BaseMap.tscn" type="PackedScene" id=1]
-[ext_resource path="res://scenes/wave_emmiter/WaveEmitter.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/_retired_scenes/wave_emmiter/WaveEmitter.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/_levels_rooms/bounce_room/instance_on_click.gd" type="Script" id=3]
 
 [node name="Node2D" type="Node2D"]

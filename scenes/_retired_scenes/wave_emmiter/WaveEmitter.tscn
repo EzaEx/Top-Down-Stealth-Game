@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://scenes/wave_emmiter/gen_particle_wave.gd" type="Script" id=1]
+[ext_resource path="res://scenes/_retired_scenes/wave_emmiter/gen_particle_wave.gd" type="Script" id=1]
 
 [node name="WaveEmitter" type="Node2D"]
 script = ExtResource( 1 )

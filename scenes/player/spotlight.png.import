@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/floor_tile.png-e22e75dbfb587db67a0c8da8bf8c8c9b.stex"
+path="res://.import/spotlight.png-b2bbbc2327954441b018cbf042632374.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tile_maps/floor_tile.png"
-dest_files=[ "res://.import/floor_tile.png-e22e75dbfb587db67a0c8da8bf8c8c9b.stex" ]
+source_file="res://scenes/player/spotlight.png"
+dest_files=[ "res://.import/spotlight.png-b2bbbc2327954441b018cbf042632374.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=false
+flags/filter=true
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

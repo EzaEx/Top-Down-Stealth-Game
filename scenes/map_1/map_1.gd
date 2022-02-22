@@ -1,139 +1,165 @@
 tool
 extends "res://scenes/base_map/base_map.gd"
 
-#rooms will be have dimensions within (inclusive) these dimensions
-export var min_room_size = Vector2(5, 4)
-export var max_room_size = Vector2(14, 11)
+const Room = preload("res://classes/room.gd")
+const neighbor_poses = [Vector2(1, 0), Vector2(-1, 0), Vector2(0, 1), Vector2(0, -1)]
 
-#amount of space bettween rooms and outer map wall
-export var wall_buffer = 2
-export var room_buffer = 2
-export var attempts = 20
+export var room_count = 20
+export var room_margin = 1
+export var edge_margin = 5
+export var gen_corridors = true
+export var from_last = false
+export var placement_attempts = 1
+export var min_shot_angle = 0
+export var max_shot_angle = 2*PI
 
+#limits of room dimensions (not including walls)
+export var min_dimensions = Vector2(3, 2)
+export var max_dimensions = Vector2(10, 7)
+
+var all_dimensions = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	#gen map on start
-	_gen_map()
+	#increase to account for walls
 	
-
-func _input(event):
-	#gen map on enter key
-	if event.is_action_pressed("ui_accept"):
-		_gen_map()
-
-#reset and generate new map layout in Tilemap
-func _gen_map():
+	randomize()
+	var poss_dims = []
+	for y in range(min_dimensions.y, max_dimensions.y + 1):
+		for x in range(min_dimensions.x, max_dimensions.x + 1):
+			if x / y > 2 or y / x > 2:
+				pass #invalid
+			else:
+				if y * x < rand_range(min_dimensions.x * min_dimensions.y, 0.75 * max_dimensions.x * max_dimensions.y):
+					var dimension = Vector2(x, y)
+					poss_dims.append(dimension)
+					
+	for i in range(room_count / 10):
+		all_dimensions.append(_rand_el(poss_dims))
 	
-	#gen 2d array of wall-tile-IDs as initial map
-	var layout_array = _gen_init_map_array()	
-	#gen vector2-indexed dict mapping posiitons to valid room radii at that position
-	var constraints = _gen_init_constraints()
+	all_dimensions.append(Vector2(30, 30))
 	
-	for _i in range(attempts):		
-		#print number of positions that could be a room centre
-		print(constraints.size())		
-		if constraints.size() > 0:
+	for i in range(room_count * 3 / 10):
+		all_dimensions.append(_rand_el(poss_dims))
 		
-			var select_pos = get_random_key(constraints) #pick random valid position
-			var select_dimensions = get_random_key(constraints[select_pos]) #pick random valid dimensions for that position
-			
-			#add room to array, update constraints dict
-			_gen_room(select_pos, select_dimensions, layout_array, constraints)
-			
-			#set room center to red tile
-			layout_array[select_pos.y][select_pos.x] = 2
-			
-		else:
-			print("no valid positions")
-			break
+	all_dimensions.append(Vector2(35, 20))
 		
-	#loop over array of tile IDs and set pos in tile-map to tile
-	for pos in all_map_pos:
-		$TileMap.set_cellv(pos, layout_array[pos.y][pos.x])
+	for i in range(room_count * 3 / 10):
+		all_dimensions.append(_rand_el(poss_dims))
+		
+	all_dimensions.append(Vector2(15, 40))
+		
+	for i in range(room_count * 3 / 10):
+		all_dimensions.append(_rand_el(poss_dims))
+	
+	clear_layout()
+	_gen_layout()
 
 
-#add room of empty tiles to given 'array' and update given 'constraints' accordingly
-func _gen_room(pos, radius_dimensions, array, constraints):
+
+func _gen_layout():
 	
-	#set all tiles within room dimensions to empty
-	for y in range(pos.y - radius_dimensions.y, pos.y + radius_dimensions.y + 1):
-		for x in range(pos.x - radius_dimensions.x, pos.x + radius_dimensions.x + 1):
-			array[y][x] = -1
+	var all_rooms = []
 	
 	
-	##------------ CONSTRAINTS-UPDATE -----------------##
-	
-	#hold new room-rect coords (incl buffers)
-	var new_top_left = Vector2(pos.x - radius_dimensions.x - room_buffer - 1, pos.y - radius_dimensions.y - room_buffer - 1)
-	var new_bottom_right = Vector2(pos.x + radius_dimensions.x + room_buffer + 1, pos.y + radius_dimensions.y + room_buffer + 1)
-	
-	var to_invalid = [] #array to hold newly invalid posiitons
-	
-	for c_pos in constraints:
-		var to_remove = [] #array to hold newly invalid dimensions
+	#generate rooms
+	for i in room_count:
+		var direction = 0
+		var dimensions = all_dimensions[i]
+		var pos_rooms = []
 		
-		for dimension in constraints[c_pos]:
-			#hold old room-rect coords (NOT incl buffers)
-			var old_top_left = Vector2(c_pos.x - dimension.x, c_pos.y - dimension.y)
-			var old_bottom_right = Vector2(c_pos.x + dimension.x, c_pos.y + dimension.y)
-			
-			#clever check to see if new and old room-rects overlap
-			if (new_top_left.x < old_bottom_right.x and new_bottom_right.x > old_top_left.x and
-			new_top_left.y < old_bottom_right.y and new_bottom_right.y > old_top_left.y):
-				to_remove.append(dimension) #invalid dimension
+		for attempt in placement_attempts:
+			var fit_in = false
+
+			var current_pos = Vector2.ZERO
+			if from_last and all_rooms.size() > 0:
+				current_pos = all_rooms[-1].get_centre()
 				
-		#remove invalid dimensions
-		for dimension in to_remove:
-			constraints[c_pos].erase(dimension)
-		
-		if constraints[c_pos].size() == 0:
-			to_invalid.append(c_pos) #position has no possible valid rooms
-	
-	#remove invalid positions
-	for d_pos in to_invalid:
-		constraints.erase(d_pos)
-		
-
-
-func _gen_init_constraints():
-	var constraints = {}
-	
-	for pos in all_map_pos:
-		#largest x-radius that can fit on map from pos
-		var max_x = min(pos.x - wall_buffer,
-					map_dimensions.x - 1 - pos.x - wall_buffer)
-		#largest y-radius that can fit on map from pos
-		var max_y = min(pos.y - wall_buffer,
-					map_dimensions.y - 1 - pos.y - wall_buffer)
-		
-		var this_constraint = {}
-		
-		#loop through all valid y dimensions
-		for y in range(min_room_size.y, min(max_y, max_room_size.y) + 1):
-			#loop through all valid x dimensions
-			for x in range(min_room_size.x, min(max_x, max_room_size.x) + 1):
-				this_constraint[Vector2(x, y)] = true #add this dimension as valid
-		
-		if this_constraint.size() > 0: #if dimensions exist, add point
-			constraints[pos] = this_constraint
-	
-	return constraints
-		
-
-#gen 2d array of wall-tile-ID's (1)
-func _gen_init_map_array():
-	var array = []
-	for y in int(map_dimensions.y):
-		array.append([])
-		for x in int(map_dimensions.x):
-			array[y].append(1)
+			direction = Vector2.RIGHT.rotated(rand_range(min_shot_angle, max_shot_angle))
+			while not fit_in:
+				var top_l = Vector2(int(current_pos.x), int(current_pos.y))
+				var btm_r = top_l + dimensions - Vector2.ONE
+				var margin = room_margin
+				var new_room = Room.new(top_l, btm_r, margin)
 				
-	return array
+				fit_in = true
+				for existing_room in all_rooms:
+					if existing_room.intersects(new_room):
+						fit_in = false
+						break
+						
+				if fit_in:
+					pos_rooms.append(new_room)
+					break
+					
+				current_pos += direction
+				
+		var winner = pos_rooms[0]
+		for candidate in pos_rooms:
+			if candidate.get_centre().length() < winner.get_centre().length():
+				winner = candidate
+		
+		all_rooms.append(winner)
 	
+	#draw room bases
+	for room in all_rooms:
+		var tiles = room.get_layout()
+		for pos in tiles:
+			$TileMap.set_cellv(pos, tiles[pos])
 
-#return random key from given dict 'dict'
-func get_random_key(dict):
-   var a = dict.keys()
-   a = a[randi() % a.size()]
-   return a
+	#find/draw corridor bases
+	for i in all_rooms.size():
+		var this_room = all_rooms[i]
+		
+		for j in range(i + 1, all_rooms.size()):
+			var that_room = all_rooms[j]
+			
+			if this_room.neighbors(that_room, all_rooms):
+				
+				if gen_corridors:
+					#make corridor
+					var that_c = that_room.get_centre()
+					var this_c = this_room.get_centre()
+					
+					that_c = Vector2(int(that_c.x), int(that_c.y))
+					this_c = Vector2(int(this_c.x), int(this_c.y))
+					
+					var ydir = 1
+					if this_c.y < that_c.y:
+						ydir = -1
+									
+					var hold_y = that_c.y
+					for y in range(that_c.y, this_c.y + ydir, ydir):
+						$TileMap.set_cell(that_c.x, y, 0)
+						$TileMap.set_cell(that_c.x + 1, y, 0)
+						hold_y = y
+					
+					var xdir = 1
+					if this_c.x < that_c.x:
+						xdir = -1
+					
+					for x in range(that_c.x, this_c.x + xdir, xdir):
+						$TileMap.set_cell(x, hold_y, 0)
+						$TileMap.set_cell(x, hold_y - ydir, 0)
+					
+				else: #no corridors, just draw graph edges
+					var path_line = Line2D.new()
+					path_line.width = 30
+					path_line.default_color = Color(0, 0, 255)
+					path_line.points = PoolVector2Array([that_room.get_centre() * 32, this_room.get_centre() * 32])
+					$Lines.add_child(path_line)
+	
+	#draw walls
+	var rec = $TileMap.get_used_rect()
+	rec.position -= Vector2.ONE * edge_margin
+	rec.size += Vector2.ONE * edge_margin * 2
+	for y in range(rec.position.y, rec.position.y + rec.size.y):
+		for x in range(rec.position.x, rec.position.x + rec.size.x):
+			if $TileMap.get_cell(x, y) == -1:
+				$TileMap.set_cell(x, y, 1)
+	
+	#apply autowall
+	$TileMap.update_bitmask_region(rec.position, rec.position + rec.size)
+	
+func _rand_el(list):
+	return list[randi() % list.size()]
