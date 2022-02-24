@@ -7,6 +7,7 @@ const neighbor_poses = [Vector2(1, 0), Vector2(-1, 0), Vector2(0, 1), Vector2(0,
 export var room_count = 20
 export var room_margin = 1
 export var edge_margin = 5
+export var generative = true
 export var gen_corridors = true
 export var from_last = false
 export var placement_attempts = 1
@@ -17,13 +18,19 @@ export var max_shot_angle = 2*PI
 export var min_dimensions = Vector2(3, 2)
 export var max_dimensions = Vector2(10, 7)
 
-var all_dimensions = []
+var all_dimensions
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	#increase to account for walls
+	if generative:
+		_generate()
 	
+
+
+func _generate():
 	randomize()
+	all_dimensions = []
 	var poss_dims = []
 	for y in range(min_dimensions.y, max_dimensions.y + 1):
 		for x in range(min_dimensions.x, max_dimensions.x + 1):
@@ -54,7 +61,6 @@ func _ready():
 	
 	clear_layout()
 	_gen_layout()
-
 
 
 func _gen_layout():

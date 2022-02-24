@@ -8,9 +8,8 @@
 [sub_resource type="CircleShape2D" id=1]
 radius = 14.0
 
-[node name="Player" type="KinematicBody2D" groups=["player"]]
+[node name="Player" type="Area2D" groups=["player"]]
 script = ExtResource( 2 )
-speed = 200
 
 [node name="Sprite" type="Sprite" parent="."]
 scale = Vector2( 0.45, 0.45 )
@@ -29,6 +28,12 @@ zoom = Vector2( 0.5, 0.5 )
 smoothing_enabled = true
 
 [node name="EyeLight" type="Light2D" parent="."]
+visible = false
 texture = ExtResource( 4 )
 texture_scale = 0.35
 shadow_enabled = true
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="CollisionRay" type="RayCast2D" parent="."]
+cast_to = Vector2( 32, 0 )
